@@ -1,0 +1,1124 @@
+{
+  "name": "Health Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "6142a443-f333-4a1b-a113-3e11e8a9d2ce",
+      "name": "Telegram Bot",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        688
+      ],
+      "webhookId": "ad6d042b-441b-4821-93a4-3440d4e895e6",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "chatId",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "userId",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "3",
+              "name": "userName",
+              "value": "={{ $json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "messageText",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "command",
+              "value": "={{ $json.message.text.split(\" \")[0].toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "commandData",
+              "value": "={{ $json.message.text.substring($json.message.text.indexOf(\" \") + 1) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b4a202bc-dbf8-4ec6-b89d-9a775b30603b",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/log",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8cb5493d-9393-4f90-929d-9b235f4c58a1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Log Meal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/view",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "770ef223-c54f-49ba-90b2-9876478a5b99"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "View Meals"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9ce5df3e-9f87-4500-aa8e-491a1ed794b2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Edit Meal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d16eb4c3-a1da-4fb0-947a-6636d486ba84"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Delete Meal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "46c04dc9-a49d-4fe5-87eb-2f386c5c2d9a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Help"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown Command"
+        }
+      },
+      "id": "214d37a5-d09f-4c22-95e2-83501c404630",
+      "name": "Route Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "userId",
+              "value": "={{ $json.userId }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "userName",
+              "value": "={{ $json.userName }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "meal",
+              "value": "={{ $json.commandData }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "date",
+              "value": "={{ $now.toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5dd5430c-7d6e-4d4c-9723-7e3f17e57868",
+      "name": "Prepare Log Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $json.userId }}",
+            "userName": "={{ $json.userName }}",
+            "meal": "={{ $json.meal }}",
+            "timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "meal",
+              "displayName": "meal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e3ac133e-aa9b-4c41-8039-298ba02b3696",
+      "name": "Save Meal to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"Parse Command\").item.json.chatId }}",
+        "text": "=✅ Meal logged successfully!\n\n{{ $(\"Prepare Log Data\").item.json.meal }}\n{{ $(\"Prepare Log Data\").item.json.timestamp }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "c46713e5-a06f-455d-a904-98ca676bd0a7",
+      "name": "Confirm Log",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        208
+      ],
+      "webhookId": "d38803f1-7651-43ed-8857-a7d7201c260b",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "user_id",
+              "lookupValue": "={{ $json.userId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aa4b3d68-6e47-4c53-82bc-d6b1e097f9ef",
+      "name": "Read Meals from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        912,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "mealsList",
+              "value": "={{ $input.all().map((item, index) => `${index + 1}. ${item.json.meal} (${item.json.timestamp})`).join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "totalMeals",
+              "value": "={{ $input.all().length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9191d2d3-ad13-4c44-a513-6abb5464e7e1",
+      "name": "Format Meals List",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"Parse Command\").item.json.chatId }}",
+        "text": "=📋 Your meals today ({{ $json.totalMeals }} total):\n\n{{ $json.mealsList || \"No meals logged yet today.\" }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "31cf6a3a-8bba-4648-bc42-f91862a221cd",
+      "name": "Send Meals List",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        400
+      ],
+      "webhookId": "e2a61d0d-af83-485f-a6b7-0336b4298098",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "mealIndex",
+              "value": "={{ parseInt($json.commandData.split(\" \")[0]) }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "newMealText",
+              "value": "={{ $json.commandData.substring($json.commandData.indexOf(\" \") + 1) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "dc66c6cc-6115-4a98-a236-241df025d344",
+      "name": "Parse Edit Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "user_id",
+              "lookupValue": "={{ $json.userId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bfe84f37-bd2a-435c-8684-180e19ccc76d",
+      "name": "Read Meals for Edit",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        592
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "meal",
+              "value": "={{ $(\"Parse Edit Command\").item.json.newMealText }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "8bc2393c-4208-49bd-a7ad-b74937056ec0",
+      "name": "Prepare Edit Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $json.user_id }}",
+            "meal": "={{ $json.meal }}"
+          },
+          "matchingColumns": [
+            "user_id"
+          ],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userName",
+              "displayName": "userName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meal",
+              "displayName": "meal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "09968b2d-1702-4fd2-8abf-9ea708f8e2c7",
+      "name": "Update Meal in Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        592
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"Parse Command\").item.json.chatId }}",
+        "text": "=✏️ Meal updated successfully!\n\nNew entry: {{ $(\"Prepare Edit Data\").item.json.meal }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a870d15e-8507-431f-ba7c-46113b494d09",
+      "name": "Confirm Edit",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1808,
+        592
+      ],
+      "webhookId": "b86e5d22-ada5-4218-b9ed-94c364ac95e9",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "mealIndex",
+              "value": "={{ parseInt($json.commandData) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6f699d4a-284e-433f-a43c-edde9a80d49c",
+      "name": "Parse Delete Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "user_id",
+              "lookupValue": "={{ $json.userId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "79758510-56ad-413c-9653-ab278ba33138",
+      "name": "Read Meals for Delete",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        784
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY",
+          "mode": "list",
+          "cachedResultName": "n8n\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t \t\t\t",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "user_states",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12p24JWjf0xLSDB11NgPSTKFtN0qa75Rr4C4-PPyMsoY/edit#gid=0"
+        },
+        "startIndex": "={{ $json.rowToDelete }}"
+      },
+      "id": "fef96f11-f15c-4621-9331-3276f6961964",
+      "name": "Delete Meal from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        784
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iJ80gw50kCvmSBo7",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"Parse Command\").item.json.chatId }}",
+        "text": "=🗑️ Meal deleted successfully!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5a7292d1-23a5-47f7-93e7-d064843a122b",
+      "name": "Confirm Delete",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1808,
+        784
+      ],
+      "webhookId": "50a2ac50-0808-4785-9898-5937b76e1c92",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "🏥 Health Chatbot Commands:\n\n/log <meal> - Log a meal (e.g., /log Breakfast: Oatmeal)\n/view - View today's meals\n/edit <number> <new meal> - Edit a meal (e.g., /edit 1 Breakfast: Yogurt)\n/delete <number> - Delete a meal (e.g., /delete 1)\n/help - Show this help message",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "4153aeb3-52db-4481-afcc-0d580cbe606c",
+      "name": "Send Help",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        976
+      ],
+      "webhookId": "ff63f7f6-3e1b-4bc2-9f1e-7948e6398762",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "❓ Unknown command. Type /help to see available commands.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "89e2dd13-1058-4f9b-b15e-8b9f33bc049b",
+      "name": "Send Unknown Command",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        1168
+      ],
+      "webhookId": "cd867ee3-5ce3-4c16-9997-8f11554f5b96",
+      "credentials": {
+        "telegramApi": {
+          "id": "tmYqEIJuUIbXqgWa",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Secondary Task: Health Chatbot [25 marks]\nBuild a simple health chatbot on Telegram where users can:\nLog meals\nTrack their day\nEdit logged meals\nDelete logged meals\nThis can be kept lightweight in scope. Focus on clean command handling and reliable data storage.",
+        "height": 192,
+        "width": 496,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "6daab426-4a8a-42b6-b49c-9058b577ba67",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "rowToDelete",
+              "value": "={{ $input.all()[$(\"Parse Delete Command\").item.json.mealIndex - 1].json.row_number }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "mealToDelete",
+              "value": "={{ $input.all()[$(\"Parse Delete Command\").item.json.mealIndex - 1].json.meal }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a2512d04-d416-4458-bd14-d20b5c462668",
+      "name": "Select Meal to Delete",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        784
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Bot": {
+      "main": [
+        [
+          {
+            "node": "Parse Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Command": {
+      "main": [
+        [
+          {
+            "node": "Route Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Command": {
+      "main": [
+        [
+          {
+            "node": "Prepare Log Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read Meals from Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Edit Command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Delete Command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Help",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Unknown Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Log Data": {
+      "main": [
+        [
+          {
+            "node": "Save Meal to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Meal to Sheets": {
+      "main": [
+        [
+          {
+            "node": "Confirm Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Meals from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Format Meals List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Meals List": {
+      "main": [
+        [
+          {
+            "node": "Send Meals List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Edit Command": {
+      "main": [
+        [
+          {
+            "node": "Read Meals for Edit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Meals for Edit": {
+      "main": [
+        [
+          {
+            "node": "Prepare Edit Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Edit Data": {
+      "main": [
+        [
+          {
+            "node": "Update Meal in Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Meal in Sheets": {
+      "main": [
+        [
+          {
+            "node": "Confirm Edit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Delete Command": {
+      "main": [
+        [
+          {
+            "node": "Read Meals for Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Meals for Delete": {
+      "main": [
+        [
+          {
+            "node": "Select Meal to Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Meal from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Confirm Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Meal to Delete": {
+      "main": [
+        [
+          {
+            "node": "Delete Meal from Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "35749c02-ad71-44a1-9b00-fa9002871509",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9fe476ae112d681ab14e4a9b76bb065eea980a13fada16b3bf8aaad5e19ea54"
+  },
+  "id": "kmoPV1vZZMYWiJ5x",
+  "tags": []
+}
