@@ -1,0 +1,730 @@
+{
+  "name": "Telegram A/B Test Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "cb72034c-c7aa-4721-903c-4f433ba36f13",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        520
+      ],
+      "webhookId": "af6b24ca-95ee-4283-ad7b-dc89d42da319",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://statsigapi.net/v1/check_gate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"user\": { \"userID\": $json.message.from.id.toString() }, \"gateName\": \"telegram_onboarding_test\" } }}",
+        "options": {}
+      },
+      "id": "faf873d6-092a-40e0-b6f1-7895546041db",
+      "name": "Get A/B Test Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        520
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j98LAZNpc7i69mCC",
+          "name": "Statsig"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "user_id",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "2",
+              "name": "username",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.from.username ?? \"unknown\" }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "first_name",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.from.first_name ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "chat_id",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "5",
+              "name": "message_text",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "is_test_group",
+              "value": "={{ $(\"Get A/B Test Group\").item.json.value }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7",
+              "name": "group_name",
+              "value": "={{ $(\"Get A/B Test Group\").item.json.value ? \"Test Group\" : \"Control Group\" }}",
+              "type": "string"
+            },
+            {
+              "id": "8",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dfc6b922-d01a-4a64-a6f9-30bbec14b3aa",
+      "name": "Prepare User Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://statsigapi.net/v1/log_event",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"events\": [{ \"user\": { \"userID\": $json.user_id.toString() }, \"eventName\": \"group_assigned\", \"value\": $json.group_name, \"metadata\": { \"is_test_group\": $json.is_test_group.toString() }, \"time\": Date.now() }] } }}",
+        "options": {}
+      },
+      "id": "7731f5c5-81e8-4f43-83ed-1438c8e55bdb",
+      "name": "Log Assignment to Statsig",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        520
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j98LAZNpc7i69mCC",
+          "name": "Statsig"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "wHdQtFfimp4B5aj1",
+          "mode": "list",
+          "cachedResultName": "User_details",
+          "cachedResultUrl": "/projects/vKOoiiVv9Zd8BlDj/datatables/wHdQtFfimp4B5aj1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $('Prepare User Data').item.json.user_id }}",
+            "username": "={{ $('Prepare User Data').item.json.username }}",
+            "first_name": "={{ $('Prepare User Data').item.json.first_name }}",
+            "chat_id": "={{ $('Prepare User Data').item.json.chat_id }}",
+            "group_name": "={{ $('Prepare User Data').item.json.group_name }}",
+            "is_test_group": "={{ $('Get A/B Test Group').item.json.value }}",
+            "message_text": "={{ $('Prepare User Data').item.json.message_text }}",
+            "timestamp": "={{ $('Prepare User Data').item.json.timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message_text",
+              "displayName": "message_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_test_group",
+              "displayName": "is_test_group",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "group_name",
+              "displayName": "group_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7b5d2957-e928-488c-b19c-03c5bd764ddc",
+      "name": "Save Assignment Log",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_test_group }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "id": "2f500574-5cc1-4b2f-9120-445334085050"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "438bbd30-bf97-42f9-ade5-d3d9490687f5",
+      "name": "Route by Group",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare User Data').item.json.chat_id }}",
+        "text": "=Hi {{ $('Prepare User Data').item.json.first_name }} ! 👋\n\nWelcome to our bot. This is a 3-step onboarding message. Let me show you around in 3 quick steps.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "558c6c32-165e-43ed-ba7f-1eea956942cc",
+      "name": "Send Step 1 - Welcome",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        664
+      ],
+      "webhookId": "c853356c-b076-4658-a9c6-0c3b7c40071d",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare User Data').item.json.chat_id }}",
+        "text": "=📋 <b>Step 1/3: Key Features</b>\n\n✅ Feature A - Do amazing things\n✅ Feature B - Automate your workflow\n✅ Feature C - Get instant results",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "08b94212-5cf6-48a8-b917-faf64ef6fcdd",
+      "name": "Send Step 2 - Features",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1808,
+        736
+      ],
+      "webhookId": "93428391-b155-40c6-b57c-c491d8a2c012",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare User Data').item.json.chat_id }}",
+        "text": "=🚀 <b>Step 2/3: How to Get Started</b>\n\n1. Type to see all commands\n2. Use settings to customize your experience",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "61176929-ef8b-4306-bb2b-bf157321ee2e",
+      "name": "Send Step 3 - Get Started",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2032,
+        808
+      ],
+      "webhookId": "ad8c40a0-5b70-4a77-8dce-44520038ef6f",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Prepare User Data').item.json.chat_id }}",
+        "text": "=✨ <b>Step 3/3: You are all set!</b>\n\nYou have completed the onboarding. Ready to start? Type anytime you need assistance.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "89e98f89-b03d-4ec9-b2e7-6e5f7e724951",
+      "name": "Send Step 4 - Complete",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2256,
+        832
+      ],
+      "webhookId": "21430f84-7cfd-4a7c-8c31-d6eb08c9e32b",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://statsigapi.net/v1/log_event",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"events\": [{ \"user\": { \"userID\": $(\"Route by Group\").item.json.user_id.toString() }, \"eventName\": \"onboarding_completed\", \"value\": \"3_step_flow\", \"time\": Date.now() }] } }}",
+        "options": {}
+      },
+      "id": "af432d39-0c6e-459c-90c0-3274fb5e05b3",
+      "name": "Log Test Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        880
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j98LAZNpc7i69mCC",
+          "name": "Statsig"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Welcome to our bot! This is just a generic text message for onboarding.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "56ff11f6-4e04-435c-a983-843fe48fb2af",
+      "name": "Send Control Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2256,
+        208
+      ],
+      "webhookId": "c8afd098-f852-43eb-9da1-7cbbfc6ab0c8",
+      "credentials": {
+        "telegramApi": {
+          "id": "BGP2YbDZubOxPDqR",
+          "name": "Telegram account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://statsigapi.net/v1/log_event",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"events\": [{ \"user\": { \"userID\": $(\"Route by Group\").item.json.user_id.toString() }, \"eventName\": \"control_message_sent\", \"value\": \"generic_welcome\", \"time\": Date.now() }] } }}",
+        "options": {}
+      },
+      "id": "b65f6386-b4d9-47aa-8e6d-11654eb0076c",
+      "name": "Log Control Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        208
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j98LAZNpc7i69mCC",
+          "name": "Statsig"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://statsigapi.net/v1/log_event",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"events\": [{ \"user\": { \"userID\": $(\"Prepare User Data\").item.json.user_id.toString() }, \"eventName\": \"bot_blocked\", \"value\": \"user_blocked_bot\", \"metadata\": { \"error_code\": $json.error?.code ?? \"unknown\", \"error_description\": $json.error?.description ?? $json.message ?? \"blocked\", \"group\": $(\"Prepare User Data\").item.json.group_name }, \"time\": Date.now() }] } }}",
+        "options": {}
+      },
+      "id": "486d0ab1-9ad8-4af9-8f8b-d92681203881",
+      "name": "Log Bot Blocked",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        544
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j98LAZNpc7i69mCC",
+          "name": "Statsig"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Develop a simple Telegram chatbot that automatically assigns each new user to one of two groups:\n. Control Group - receives a generic welcome message\nTest Group goes through a guided 3-step onboarding flow\nYou must use Statsig as the A/B testing provider for group assignment.\nEvent Logging\nLog every group assignment and key user event in a structured manner to enable downstream analysis.",
+        "height": 176,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        224
+      ],
+      "typeVersion": 1,
+      "id": "5c93ab56-b4aa-435b-8f4f-54ce82eec5d5",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get A/B Test Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get A/B Test Group": {
+      "main": [
+        [
+          {
+            "node": "Prepare User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare User Data": {
+      "main": [
+        [
+          {
+            "node": "Log Assignment to Statsig",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Assignment to Statsig": {
+      "main": [
+        [
+          {
+            "node": "Save Assignment Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Assignment Log": {
+      "main": [
+        [
+          {
+            "node": "Route by Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Group": {
+      "main": [
+        [
+          {
+            "node": "Send Step 1 - Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Control Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Step 1 - Welcome": {
+      "main": [
+        [
+          {
+            "node": "Send Step 2 - Features",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Bot Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Step 2 - Features": {
+      "main": [
+        [
+          {
+            "node": "Send Step 3 - Get Started",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Bot Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Step 3 - Get Started": {
+      "main": [
+        [
+          {
+            "node": "Send Step 4 - Complete",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Bot Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Step 4 - Complete": {
+      "main": [
+        [
+          {
+            "node": "Log Test Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Bot Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Control Message": {
+      "main": [
+        [
+          {
+            "node": "Log Control Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Bot Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c66629b9-de44-45fd-8f11-edb11e590a5b",
+  "meta": {
+    "instanceId": "44f92f9faa0fa1fc9aa57d05abd212531917ea4a4927e708571239bd6583ac09"
+  },
+  "id": "lAtAt6s0xpusdh4q",
+  "tags": []
+}
